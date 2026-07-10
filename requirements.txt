@@ -1,0 +1,77 @@
+# ===========================
+# KITTY HIVE REQUIREMENTS
+# Version: Phase 1 Foundation
+# ===========================
+
+# AI Runtime
+ollama
+
+# Memory
+chromadb
+
+# Embeddings
+onnxruntime
+sentence-transformers
+
+# Performance
+uvloop
+
+# Async HTTP
+aiohttp
+
+# Tokenizer
+tiktoken
+
+# Hybrid Search
+rank-bm25
+
+# Validation
+pydantic
+
+# Security
+bandit
+
+# Web Scraping
+beautifulsoup4
+lxml
+
+# HTTP Requests
+requests
+
+# Environment Variables
+python-dotenv
+
+# Data Processing
+numpy
+pandas
+
+# YAML Configuration
+PyYAML
+
+# System Monitoring
+psutil
+
+# Rich Terminal UI
+rich
+
+# Progress Bars
+tqdm
+
+# Logging
+loguru
+
+# GitHub API
+PyGithub
+
+# File Watcher
+watchdog
+
+# Optional Future Dashboard
+fastapi
+uvicorn
+
+# Optional Future Telegram
+python-telegram-bot
+
+# Optional Future Discord
+discord.py

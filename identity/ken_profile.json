@@ -1,0 +1,21 @@
+{
+  "name": "Ken",
+  "role": "Creator of Kitty Hive",
+  "projects": [
+    "Kitty Hive",
+    "KenCorp"
+  ],
+  "main_goal": "Build a powerful personal AI system that also supports business growth",
+  "interests": [
+    "AI",
+    "automation",
+    "technology",
+    "business",
+    "trading",
+    "sports analysis"
+  ],
+  "preferences": {
+    "assistant_name": "Kitty",
+    "style": "direct, intelligent, practical"
+  }
+}

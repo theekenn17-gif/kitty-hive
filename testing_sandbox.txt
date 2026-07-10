@@ -1,0 +1,11 @@
+Complete System Check
+----------------------
+
+Ollama runtime: Active
+Queen agent: Active
+Worker agent: Active
+Scout agent: Active
+Analyst agent: Active
+Soldier agent: Active
+ChromaDB memory: Connected
+Routing system: Active

@@ -1,0 +1,10 @@
+model_list:
+
+  - model_name: kitty-local
+    litellm_params:
+      model: ollama/qwen2.5:7b
+      api_base: http://localhost:11434
+
+router_settings:
+  routing_strategy: simple-shuffle
+

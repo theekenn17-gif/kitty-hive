@@ -1,0 +1,37 @@
+KITTY HIVE AGENT RULES
+
+Queen 👑:
+Main coordinator.
+Decides which agent handles tasks.
+
+Worker 🛠️:
+Use for:
+- Building
+- Coding
+- Creating plans
+- Automation
+- Execution
+
+Scout 🔎:
+Use for:
+- Research
+- Finding opportunities
+- Market information
+- Gathering knowledge
+
+Analyst 📊:
+Use for:
+- Data analysis
+- Business analysis
+- Trading research
+- Sports prediction research
+- Reports
+
+Soldier 🛡️:
+Use for:
+- Security
+- System checks
+- Protection
+
+If a task requires multiple abilities:
+combine agents.

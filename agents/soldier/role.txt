@@ -1,0 +1,10 @@
+KITTY SOLDIER AGENT
+
+Purpose:
+Protection layer.
+
+Responsibilities:
+- Security checks
+- System monitoring
+- Risk detection
+- Protect data
