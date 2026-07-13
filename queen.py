@@ -24,7 +24,14 @@ import tiktoken
 from rank_bm25 import BM25Okapi
 from hive_dispatcher import activate_agent
 from monitor.hive_status import get_hive_status
-from console.commands import execute
+from console.commands import execute, load
+
+# ⚡ HIGH-PERFORMANCE LIFECYCLE: Link RAM Cache and Millisecond Tracking Modules
+from performance.cache import (
+    get_cached_identity, get_cached_plan, get_cached_core,
+    get_cached_rules, get_cached_agents
+)
+from performance.timer import hive_timer
 
 # 🔌 MCP INITIALIZATION BLOCK MAPPING
 from core.mcp_manager import mcp_manager
@@ -45,43 +52,20 @@ async def init_mcp_ecosystem():
 # Trigger the single async lifecycle loop boot pass natively
 asyncio.run(init_mcp_ecosystem())
 
-def load_identity():
-    with open("identity/ken_profile.json", "r") as f:
-        ken = json.load(f)
-    with open("identity/kitty_identity.json", "r") as f:
-        kitty = json.load(f)
-    return ken, kitty
+# ⚡ PROGRAMMATIC VRAM PRIMING: Loads weights straight into RAM without wasting time on token inference
+print("🦙 Loading Qwen 2.5 into RAM...")
+try:
+    ollama.generate(model="qwen2.5:7b", prompt="", options={"num_predict": 0}, keep_alive="30m")
+    print("✅ Neural path arrays primed.")
+except Exception as e:
+    print(f"⚠️ Warming skipped: {e}")
 
-ken_profile, kitty_identity = load_identity()
-
-def load_plan():
-    with open("knowledge/hive_plan.txt", "r") as f:
-        return f.read()
-
-hive_plan = load_plan()
-
-def load_core():
-    with open("knowledge/kitty_core.txt", "r") as f: 
-        return f.read()
-
-kitty_core = load_core()
-
-def load_rules():
-    with open("knowledge/agent_rules.txt", "r") as f:
-        return f.read()
-
-agent_rules = load_rules()
-
-def load_agents():
-    agents = {}
-    for agent in os.listdir("agents"):
-        role_file = f"agents/{agent}/role.txt"
-        if os.path.exists(role_file):
-            with open(role_file, "r") as f:
-                agents[agent] = f.read()
-    return agents
-
-agents = load_agents()
+# Load all core identities and data frameworks directly from fast RAM cache blocks
+ken_profile, kitty_identity = get_cached_identity()
+hive_plan = get_cached_plan()
+kitty_core = get_cached_core()
+agent_rules = get_cached_rules()
+agents = get_cached_agents()
 
 memory_client = chromadb.PersistentClient(path="memory/database")
 
@@ -111,11 +95,12 @@ def choose_agent(question):
     return "queen"
 
 def ask_kitty(question):
-    print("\n👑 Queen thinking...")
+    # Start the monotonic millisecond tracker
+    hive_timer.start()
+    
     agent = choose_agent(question)
-    print(f"🐝 Routing to: {agent}")
+    hive_timer.mark("Agent Routing Decisions")
 
-    hive_status = get_hive_status()
     active_memory = get_agent_memory(agent)
 
     try:
@@ -126,21 +111,33 @@ def ask_kitty(question):
     except Exception:
         pass
 
+    # Preserved pure semantic vector database query processing patterns
     memories = active_memory.query(query_texts=[question], n_results=5)
+    hive_timer.mark("Semantic Vector DB Retrieval")
 
     context = ""
     try:
+        # ✅ BUGFIX: Target the first index list array [0] to securely un-nest ChromaDB's matrix layout
         docs = memories.get("documents", [])
         if docs and isinstance(docs, list) and len(docs) > 0 and docs[0]:
             target_docs = docs[0]
-            corpus = [doc.lower().split(" ") for doc in target_docs]
+            corpus = [doc.lower().split() for doc in target_docs]
             bm25 = BM25Okapi(corpus)
-            tokenized_query = question.lower().split(" ")
-            best_docs = bm25.get_top_n(tokenized_query, target_docs, n=3)
+            tokenized_query = question.lower().split()
+            best_docs = bm25.get_top_n(tokenized_query, target_docs, n=min(3, len(target_docs)))
             context = "\n".join(best_docs)
+            hive_timer.mark("BM25 Keyword Re-ranking")
     except Exception as e:
         print(f"⚠️ Hybrid retrieval re-ranking pass skipped or structure empty: {e}")
         context = ""
+
+    # Lazy Telemetry Logic implementation. Bypass heavy scans for basic conversations.
+    hive_status = {}
+    needs_sensors = agent != "queen" or any(w in question.lower() for w in ["status", "system", "metrics", "telemetry"])
+    
+    if needs_sensors:
+        hive_status = get_hive_status()
+        hive_timer.mark("Cross-Platform Sensor Scan")
 
     if agent != "queen":
         print(f"👑 Queen: Commanding {agent.upper()} to execute...")
@@ -151,6 +148,7 @@ def ask_kitty(question):
         )
 
         answer = activate_agent(agent, task_with_sensors)
+        hive_timer.mark(f"{agent.upper()} Agent Task Execution Loop")
 
         active_memory.add(
             documents=[f"Task: {question}\nExecution:\n{answer}"],
@@ -185,6 +183,15 @@ Maximum 10 lines.
         )
 
         queen_summary = summary_response["message"]["content"]
+        hive_timer.mark("Queen Executive Review Logic")
+        
+        # RAM STATE MANAGER PASS: Bypasses heavy disk I/O reads
+        try:
+            state_cache = load()
+            if state_cache.get("performance_logs"):
+                print(hive_timer.report())
+        except Exception:
+            pass
 
         return f"""
 {answer} 
@@ -220,9 +227,7 @@ Hive Agent Rules:
 {agent_rules}
 
 REAL HIVE STATUS:
-{json.dumps(hive_status, indent=2)} 
-
-Always answer as Kitty. Use memory when available.
+{json.dumps(hive_status, indent=2) if hive_status else "Telemetry skipped for conversational efficiency context."} 
 """
 
     response = ollama.chat(
@@ -234,10 +239,24 @@ Always answer as Kitty. Use memory when available.
     )
 
     answer = response["message"]["content"]
-    active_memory.add(
-        documents=[f"Question: {question} Answer: {answer}"],
-        ids=[f"queen_{os.urandom(2).hex()}"]
-    )
+    hive_timer.mark("Queen Neural Core Response")
+    
+    try:
+        active_memory.add(
+            documents=[f"Question: {question} Answer: {answer}"],
+            ids=[f"queen_{os.urandom(2).hex()}"]
+        )
+    except Exception:
+        pass
+        
+    # RAM STATE MANAGER PASS: Bypasses heavy disk I/O reads
+    try:
+        state_cache = load()
+        if state_cache.get("performance_logs"):
+            print(hive_timer.report())
+    except Exception:
+        pass
+        
     return answer
 
 # 👑 INTERACTIVE TERMINAL LOOP ENVIRONMENT WITH CONSOLE INTERCEPT ROUTING
