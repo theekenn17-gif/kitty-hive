@@ -11,10 +11,16 @@ tools_path = os.path.join(PROJECT_ROOT, "tools")
 if tools_path not in sys.path:
     sys.path.insert(0, tools_path)
 
-# ⚡ HIGH-PERFORMANCE LIFECYCLE: Initialize uvloop immediately
-import uvloop
+# ⚡ HIGH-PERFORMANCE LIFECYCLE: Initialize uvloop immediately when available
 import asyncio
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+try:
+    import uvloop
+except ImportError:
+    uvloop = None
+
+if uvloop is not None:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 import ollama
 import chromadb
@@ -32,6 +38,9 @@ from performance.cache import (
     get_cached_rules, get_cached_agents
 )
 from performance.timer import hive_timer
+
+# 🧠 COGNITIVE LAYER INITIALIZATION
+from core.cognitive import ChiefOfStaff, ContextQuery
 
 # 🔌 MCP INITIALIZATION BLOCK MAPPING
 from core.mcp_manager import mcp_manager
@@ -68,6 +77,8 @@ agent_rules = get_cached_rules()
 agents = get_cached_agents()
 
 memory_client = chromadb.PersistentClient(path="memory/database")
+chief_of_staff = ChiefOfStaff()
+
 
 def get_agent_memory(agent_name: str):
     return memory_client.get_or_create_collection(
@@ -94,10 +105,29 @@ def choose_agent(question):
     if any(word in q for word in ["security", "protect", "check", "vulnerability"]): return "soldier"
     return "queen"
 
+def build_cognitive_context(question, agent):
+    try:
+        response = chief_of_staff.handle(ContextQuery(task=question, agent=agent, scope="general", token_budget=2000))
+        if not response.evidence and not response.recommendations:
+            return ""
+
+        parts = [f"Cognitive Layer Summary: {response.summary}"]
+        if response.evidence:
+            evidence_lines = [f"- {item.summary}" for item in response.evidence[:3]]
+            parts.append("Cognitive Evidence:\n" + "\n".join(evidence_lines))
+        if response.recommendations:
+            rec_lines = [f"- {item.summary}" for item in response.recommendations[:3]]
+            parts.append("Cognitive Recommendations:\n" + "\n".join(rec_lines))
+        return "\n\n".join(parts)
+    except Exception as exc:
+        return f"Cognitive Layer unavailable: {exc}"
+
+
 def ask_kitty(question):
     # Start the monotonic millisecond tracker
     hive_timer.start()
-    
+
+    cognitive_context = build_cognitive_context(question, "queen")
     agent = choose_agent(question)
     hive_timer.mark("Agent Routing Decisions")
 
@@ -144,6 +174,7 @@ def ask_kitty(question):
         task_with_sensors = (
             f"REAL HIVE STATUS:\n"
             f"{json.dumps(hive_status, indent=2)}\n\n"
+            f"COGNITIVE CONTEXT:\n{cognitive_context}\n\n"
             f"TASK:\n{question}"
         )
 
@@ -227,7 +258,10 @@ Hive Agent Rules:
 {agent_rules}
 
 REAL HIVE STATUS:
-{json.dumps(hive_status, indent=2) if hive_status else "Telemetry skipped for conversational efficiency context."} 
+{json.dumps(hive_status, indent=2) if hive_status else "Telemetry skipped for conversational efficiency context."}
+
+COGNITIVE CONTEXT:
+{cognitive_context if cognitive_context else "No additional cognitive context generated."}
 """
 
     response = ollama.chat(

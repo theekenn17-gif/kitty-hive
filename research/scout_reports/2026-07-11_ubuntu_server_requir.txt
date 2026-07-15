@@ -1,0 +1,84 @@
+
+==================================================
+ROLE: Master Intelligence, Research, and Web Reconnaissance Agent of Kitty Hive 🔎🐝.
+
+MISSION:
+Gather real-time data, fetch up-to-date market trends, and extract verified web details for Ken.
+
+OUTPUT FORMAT:
+SEARCH QUERY: The clean text used to pull data.
+FINDINGS: Bullet points of raw factual data extracted from the web.
+STATUS: Success / Refused / No Results.
+NEXT STEP: How the worker or analyst should use this information.
+
+TRUTH SYSTEM:
+Never invent news, dates, or market statistics. If a web lookup fails, report the error honestly.
+
+==================================================
+SEARCH QUERY: "ubuntu server requirements"
+STATUS: Offline Fallback Mode
+
+FINDINGS:
+### Scout Research Report on Ubuntu Server Requirements
+
+#### Overview
+This report provides an overview of the general trends and requirements related to deploying and managing an Ubuntu server. The information is based on offline knowledge and may not reflect real-time events or updates.
+
+---
+
+#### 1. System Requirements
+
+- **Processor**: Modern CPUs with at least two cores are recommended for a basic setup, though more complex workloads might require higher core counts.
+- **Memory (RAM)**: A minimum of 2GB is generally required; however, for most production environments, 4GB or more is recommended. For resource-intensive applications like databases, virtualization, and machine learning, 8GB or more is advisable.
+- **Storage**: Typically, 10-50GB of storage is sufficient for the OS installation. Additional space will be needed depending on software installations, backups, and data storage needs.
+
+---
+
+#### 2. Networking Requirements
+
+- **Public IP Address**: A public IP address is typically required if you plan to access your server over the internet.
+- **Ports Configuration**: Common ports include HTTP (80), HTTPS (443), SSH (22), FTP (21), and database-specific ports (e.g., MySQL 3306, PostgreSQL 5432). These should be open in your firewall or router settings.
+
+---
+
+#### 3. Software Requirements
+
+- **Ubuntu Server**: The latest LTS (Long-Term Support) version is recommended for stability and security updates.
+- **Updates and Patching**: Regular system updates are crucial to maintain security and performance. This can typically be managed via `apt` for software updates, and `unattended-upgrades` for automated patches.
+
+---
+
+#### 4. Security Requirements
+
+- **Firewall Setup**: Use UFW (Uncomplicated Firewall) or a similar tool to manage inbound and outbound traffic.
+- **User Management**: Ensure strong password policies are in place and use `sudo` appropriately for managing administrative tasks.
+- **Regular Backups**: Implement a backup strategy using tools like `rsync`, `tar`, or cloud-based services.
+
+---
+
+#### 5. Performance Optimization
+
+- **Tuning Services**: Optimize services such as Apache, Nginx, PostgreSQL, etc., by configuring parameters specific to your workload and environment.
+- **Caching Mechanisms**: Implement caching solutions where applicable (e.g., Varnish for web applications).
+- **Load Balancing**: Consider using load balancers like HAProxy or NGINX Plus to distribute traffic across multiple servers.
+
+---
+
+#### 6. Monitoring and Logging
+
+- **Monitoring Tools**: Use tools such as `Prometheus` with `Grafana`, `Nagios`, or `Zabbix` for monitoring server performance, applications, and network.
+- **Log Management**: Configure logrotate to manage logs effectively and use tools like `ELK Stack` (Elasticsearch, Logstash, Kibana) for centralized logging.
+
+---
+
+#### 7. Scalability and Redundancy
+
+- **Virtualization**: Consider using virtualization technologies like LXC or KVM if you need flexible resource allocation.
+- **High Availability**: Implement strategies such as clustering, failover mechanisms, and load balancing to ensure high availability of critical services.
+
+---
+
+### Conclusion
+This report provides a general outline of the requirements for Ubuntu server deployments. For specific use cases, it is advisable to consult the official Ubuntu documentation and relevant community forums or support channels for up-to-date information and best practices.
+
+**Note**: The data in this report is generated from offline knowledge and may not reflect current real-time events or updates. Always verify critical information with official sources before making decisions regarding server configurations and operations.

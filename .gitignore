@@ -1,2 +1,43 @@
 # Generated context artifacts
 memory/context/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+kitty_env/
+memory/memory-env/
+venv/
+.env
+
+# Chroma databases
+memory/database/
+chroma/
+
+# Logs
+logs/
+*.log
+
+# Backups
+backups/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Temporary
+*.tmp
+*.bak
+*.save
